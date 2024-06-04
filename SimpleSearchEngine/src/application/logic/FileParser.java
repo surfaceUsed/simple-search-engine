@@ -13,7 +13,7 @@ public class FileParser {
     private final static String ANY = "any";
     private final static String NONE = "none";
 
-    private final String filePath; 
+    private final String filePath;
     private final Map<String, List<Integer>> personMapper; // Inverted index data structure.
 
     private List<String> personList;
@@ -29,15 +29,15 @@ public class FileParser {
         try(Stream<String> fileStream = Files.lines(Paths.get(this.filePath))) {
 
             this.personList = fileStream.collect(Collectors.toList());
-            listMapper();
+            initListMapper();
 
         } catch (IOException e) {
-            System.out.println("Couldn't read file: " + e.getMessage());
+            System.out.println("Error reading file: " + e.getMessage());
         }
     }
 
     // Maps each word in the text file to the line which the word occurs, and adds each occurence to an ArrayList (the line number starts at index 0).
-    private void listMapper() {
+    private void initListMapper() {
 
         for (int i = 0; i < this.personList.size(); i++)  {
             String[] tab = this.personList.get(i).toLowerCase().split("\\s+");
@@ -54,76 +54,65 @@ public class FileParser {
 
     void queryList(String strategy, String query) {
 
-        switch (strategy) {
-
-            case ALL:
-                searchAll(query);
-                break;
-
-            case ANY:
-                searchAny(query);
-                break;
-
-            case NONE:
-                searchNone(query);
-                break;
-
-            default:
-                System.out.println("Invalid search strategy!");
-                break;
-        }
-    }
-
-    private void searchAll(String query) {
         String[] search = query.toLowerCase().split("\\s+");
+
         if (search.length != 0) {
+
             Map<Integer, Integer> indexMap = indexMapper(search);
+
             if (!indexMap.isEmpty()) {
-                for (Integer numb : indexMap.keySet()) {
-                    if (indexMap.get(numb) == search.length) {
-                        System.out.println(this.personList.get(numb));
-                    }
+
+                switch (strategy) {
+
+                    case ALL:
+                        searchAll(indexMap, search.length);
+                        break;
+
+                    case ANY:
+                        searchAny(indexMap.keySet());
+                        break;
+
+                    case NONE:
+                        searchNone(indexMap.keySet());
+                        break;
+
+                    default:
+                        System.out.println("Invalid search strategy!");
+                        break;
                 }
+
             } else {
                 System.out.println("No match found!");
             }
+
         } else {
             System.out.println("Query is empty!");
         }
     }
 
-    private void searchAny(String query) {
-        String[] search = query.toLowerCase().split("\\s+");
-        if (search.length != 0) {
-            Set<Integer> keys = indexMapper(search).keySet();
-            if (!keys.isEmpty()) {
-                for (Integer index : keys) {
-                    System.out.println(this.personList.get(index));
-                }
-            } else {
-                System.out.println("No match found!");
+    // Search query needs to match all the words of a sentence in the text file to be valid. If one of the words in the query has no match 
+    // then nothing will be printed. All the sentences in the text file that matches the search query will be printed. 
+    private void searchAll(Map<Integer, Integer> indexMap, int wordsInSearch) {
+        for (Integer numb : indexMap.keySet()) {
+            if (indexMap.get(numb) == wordsInSearch) {
+                System.out.println(this.personList.get(numb));
             }
-        } else {
-            System.out.println("Query is empty!");
         }
     }
 
-    private void searchNone(String query) {
-        String[] search = query.toLowerCase().split("\\s+");
-        if (search.length != 0) {
-            Set<Integer> keys = indexMapper(search).keySet();
-            if (!keys.isEmpty()) {
-                for (int i = 0; i < this.personList.size(); i++) {
-                    if (!isMatchingIndex(keys, i)) {
-                        System.out.println(this.personList.get(i));
-                    }
-                }
-            } else {
-                System.out.println("No match found!");
-            }
-        } else {
-            System.out.println("Query is empty!");
+    // Prints all the the sentences in the text file that matches with a single word from the search query. 
+    private void searchAny(Set<Integer> keys) {
+        for (Integer index : keys) {
+            System.out.println(this.personList.get(index));
+        }
+    }
 
+    // Prints all the sentences in the text file that produces no matches from the search query. 
+    private void searchNone(Set<Integer> keys) {
+        for (int i = 0; i < this.personList.size(); i++) {
+            if (!isMatchingIndex(keys, i)) {
+                System.out.println(this.personList.get(i));
+            }
         }
     }
 
