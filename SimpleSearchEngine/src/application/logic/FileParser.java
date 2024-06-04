@@ -69,6 +69,7 @@ public class FileParser {
 
             default:
                 System.out.println("Invalid search strategy!");
+                break;
         }
     }
 
