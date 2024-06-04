@@ -70,7 +70,7 @@ public class Controller {
         }
     }
 
-    // Enter type of search to be performed (ALL, ANY, NONE), and then the search query.
+    // Enter type of search to be performed (ALL, ANY, NONE), and then the search query (word or sentence).
     private void findPerson() {
         System.out.println("Select a matching strategy: ALL, ANY, NONE");
         String queryStrategy = this.scanner.nextLine().toLowerCase();
