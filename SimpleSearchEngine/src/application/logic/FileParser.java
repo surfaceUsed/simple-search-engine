@@ -13,8 +13,8 @@ public class FileParser {
     private final static String ANY = "any";
     private final static String NONE = "none";
 
-    private final String filePath;
-    private final Map<String, List<Integer>> personMapper;
+    private final String filePath; 
+    private final Map<String, List<Integer>> personMapper; // Inverted index data structure.
 
     private List<String> personList;
 
@@ -36,6 +36,7 @@ public class FileParser {
         }
     }
 
+    // Maps each word in the text file to the line which the word occurs, and adds each occurence to an ArrayList (the line number starts at index 0).
     private void listMapper() {
 
         for (int i = 0; i < this.personList.size(); i++)  {
