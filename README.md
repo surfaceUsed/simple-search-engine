@@ -9,7 +9,7 @@ the line in the file which the word occurs.
 
 The user can choose a startegy for what kind of search to be performed:
 
-"ALL" -> The program prints all lines in the text that matches every word in the input-text.
+"ALL" -> The program prints all lines in the text that matches every word in the query-text.
 
 "ANY" -> The program prints all lines in the text that contains at least one word from the query.
 
